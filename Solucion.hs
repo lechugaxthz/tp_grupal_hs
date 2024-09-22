@@ -29,7 +29,7 @@ sacarCiudadesRepetidas (x:xs)
     | not (pertenece1 x xs) = [x] ++ sacarCiudadesRepetidas xs
     | otherwise = x : (sacarCiudadesRepetidas (sacarCiudadEspecifica x xs)) 
 
-pertenece1 :: Ciudad -> [Ciudad] -> Bool
+pertenece1 :: Ciudad -> [Ciudad] -> Bool -- Función que se fija si la ciudad pertenece a la lista de ciudades
 pertenece1 _ [] = False
 pertenece1 x (y:ys) = x == y || pertenece1 x ys
 
@@ -51,8 +51,40 @@ ciudadMasConectada _ = "Rosario" -- Borrar y escribir el código correcto
 
 -- EJERCICIO 5
 sePuedeLlegar :: AgenciaDeViajes -> Ciudad -> Ciudad -> Bool
-sePuedeLlegar vuelos origen destino = True -- Borrar y escribir el código correcto
+sePuedeLlegar [] _ _ = False
+sePuedeLlegar ((c1,d1,t1):xs) origen destino = conUnViaje ((c1,d1,t1):xs) origen destino || conEscala ((c1,d1,t1):xs) origen destino
 
+conUnViaje :: AgenciaDeViajes -> Ciudad -> Ciudad -> Bool
+conUnViaje [] _ _ = False
+conUnViaje ((c1,d1,t1):xs) origen destino 
+    | origen == c1 && destino == d1 = True
+    | otherwise = conUnViaje xs origen destino 
+
+conEscala :: AgenciaDeViajes -> Ciudad -> Ciudad -> Bool
+conEscala [] _ _ = False
+conEscala ((c1,d1,t1):xs) origen destino = 
+     (origen == (mostrarOrigen (chequeoOrigen ((c1,d1,t1):xs) origen))) &&
+     (destino == (mostrarDestino(chequeoDestino ((c1,d1,t1):xs) destino))) && 
+     (coinciden (chequeoOrigen ((c1,d1,t1):xs) origen) (chequeoDestino ((c1,d1,t1):xs) destino))
+
+chequeoOrigen :: AgenciaDeViajes -> Ciudad -> Vuelo
+chequeoOrigen ((c1,d1,t1):xs) origen 
+    | origen == c1 = (c1,d1,t1)
+    | otherwise = chequeoOrigen xs origen
+
+chequeoDestino :: AgenciaDeViajes -> Ciudad -> Vuelo
+chequeoDestino ((c1,d1,t1):xs) destino 
+    | destino == d1 = (c1,d1,t1)
+    | otherwise = chequeoDestino xs destino
+
+coinciden :: Vuelo -> Vuelo -> Bool
+coinciden (c1,d1,t1) (c2,d2,t2) = d1 == c2
+
+mostrarOrigen :: Vuelo -> Ciudad
+mostrarOrigen (c1,d1,t1) = c1
+
+mostrarDestino :: Vuelo -> Ciudad
+mostrarDestino (c1,d1,t1) = d1
 
 -- EJERCICIO 6
 duracionDelCaminoMasRapido :: AgenciaDeViajes -> Ciudad -> Ciudad -> Duracion
