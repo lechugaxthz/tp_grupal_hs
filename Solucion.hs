@@ -1,3 +1,4 @@
+import System.Win32 (xBUTTON1)
 
 type Ciudad = String
 type Duracion = Float
@@ -62,18 +63,41 @@ modernizarFlota _ = [("BsAs","Rosario",9.0)] -- Borrar y escribir el código cor
 -- EJERCICIO 4
 
 ciudadMasConectada :: AgenciaDeViajes -> Ciudad
-ciudadMasConectada [x] = x
-ciudadMasConectada ((c1,d1,t1):(c2,d2,t2):xs) | (numConexiones C1 >= numConexiones C2 && numConexiones C1 >= numConexiones D2) || (numConexionesD1 >= numConexionesD2 && numConexiones D1 >= numConexiones C2) = ciudadMasConectada ((c1,d1,t1):xs)
-                                              | otherwise = ciudadMasConectada ((c2,d2,t2):xs)
-    where
-        numConexionesC1  = longitud (ciudadesConectadas ((c1,d1,t1):(c2,d2,t2):xs) c1)
-        numConexionesC2  = longitud (ciudadesConectadas ((c1,d1,t1):(c2,d2,t2):xs) c2)
-        numConexionesD1 = longitud (ciudadesConectadas ((c1,d1,t1):(c2,d2,t2):xs) d1)
-        numConexionesD2 = longitud (ciudadesConectadas ((c1,d1,t1):(c2,d2,t2):xs) d2)
+ciudadMasConectada (x:xs) = tuplaConMasApariciones (agenciaATupla (x:xs))
 
-longitud :: [t] -> Integer
-longitud [] = 0
-longitud (x:xs) = 1 + longitud xs
+--tuplaConMasApariciones procesa una lista compuesta por tuplas (Ciudad,Apariciones), y nos da la tupla con mas apariciones
+tuplaConMasApariciones :: [(Ciudad, Integer)] -> Ciudad
+tuplaConMasApariciones [(c,a)] = c 
+tuplaConMasApariciones ((c1,a1):(c2,a2):xs) | a1 >= a2 = tuplaConMasApariciones ((c1,a1):xs)
+                                            | otherwise = tuplaConMasApariciones ((c2,a2):xs)
+--agenciaATupla agarra una lista del formato AgenciaDeViajes, y envía esta lista para conversorString, la cual puede procesar generarTupla
+agenciaATupla :: AgenciaDeViajes -> [(Ciudad, Integer)]
+agenciaATupla ((c,d,t):xs) = generarTupla (conversorString ((c,d,t):xs))
+
+--generarTupla agarra una lista del formato [String], y genera tuplas con el nombre del string y la cantidad de veces (Apariciones) que está en la lista
+generarTupla :: [String] -> [(Ciudad, Integer)]
+generarTupla [] = []
+generarTupla (x:xs) = (x,cantidadDeApariciones x (x:xs)) : generarTupla (quitarElementos x xs)
+
+--conversorString envía los orígenes y destinos de nuestra agencia de viajes a una lista aparte, para mejor manejo. 
+conversorString :: AgenciaDeViajes -> [String]
+conversorString [] = []
+conversorString ((c,d,t):xs) = [c,d] ++ conversorString xs
+
+--Cuenta la cantidad de veces que aparece el string que nos interesa en la lista
+cantidadDeApariciones :: String -> [String] -> Integer
+cantidadDeApariciones ciudad [] = 0
+cantidadDeApariciones ciudad (x:xs) | ciudad == x = 1 + cantidadDeApariciones ciudad xs
+                                    | otherwise = cantidadDeApariciones ciudad xs
+
+--Va quitando los elementos que queramos de la lista
+quitarElementos :: String -> [String] -> [String]
+quitarElementos nombre [] = []
+quitarElementos nombre (x:xs) | nombre == x = quitarElementos nombre xs 
+                              | otherwise = x : quitarElementos nombre xs
+
+
+
 
 
 -- EJERCICIO 5
