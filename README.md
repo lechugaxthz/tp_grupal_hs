@@ -3,10 +3,10 @@
 
 
 
-### Ejercicio 6
+## Ejercicio 6
 
-> Parametros :
->   - **vuelos** (AgengiaDeViajes).
+### Parametros :
+>   - **vuelos** (_AgengiaDeViajes_).
 >   - **ciudadOrigen** -$>$ de donde partimos.
 >   - **ciudadDestino** -$>$ a donde queremos ir.
 
@@ -20,7 +20,7 @@
 >
 > / $n \not= m$ 
 
-#### pasos a seguir:
+### pasos a seguir:
 1. filtramos aquellos con origen y/o destino iguales a **ciudadOrigen** y **ciudadDestino**  usando la funcion **destinoUOrigenEnComun** (para ahorrar trabajo de computo en los siguientes puntos)
 ``` hs
 destinoUOrigenEnComun :: AgenciaDeViajes -> Ciudad -> Ciudad -> [Duracion]
@@ -81,3 +81,30 @@ minimaDuracion  (tiempo1:tiempo2:tiempos)
     -}
 ```
 como sabemos, esta funcion recibe de la anterior una lista con los tiempos de cada vuelo (escala o directo) y devuelve la minima duración de vuelo entre los dos puntos definidos como ciudadOrigen y ciudadDestino
+
+
+## Ejercicio 7
+
+### Descripción :
+> Funcion : _puedoVolverOrigen_
+> Cumple : Devuelve un Booleano acorde a si es posible salir con un vuelo desde el _Origen_ hasta otro destino _X_ y desde ese destino volver al _Origen_ de con otro vuelo o vuelos desde _X_ a _Y_ y siguientes hasta _Origen_ (es decir, con una o mas _Escalas_)
+
+### Funciones pricipales y secundarias :
+
+#### puedoVolverAOrigen
+##### Parametros y valor:
+>   - Parametros
+>       - **vuelos** (_AgenciaDeViajes_)
+>       - **origen** -$>$ ciudad de la que queremos salir y volver en otro u otros vuelos
+
+>   - Valor
+>       - La función vale un Booleano acorde a si cumple o no con lo indicado.
+
+##### Acciones :
+> Llama a _validaEscalas_ y otras funciones (_conMismoOrigen_, _diferenteACiudad_, _conMismoDestino_) como parte de su parametro para obtener un tipo de dato _[[AgenciaDeViajes]]_ (se describen las mismas funciones a continuación)
+
+``` hs
+puedoVolverAOrigen :: AgenciaDeViajes -> Ciudad -> Bool
+puedoVolverAOrigen vuelos origen = validaEscalas [conMismoOrigen vuelos origen, diferenteACiudad vuelos origen, conMismoDestino vuelos origen]
+
+```
