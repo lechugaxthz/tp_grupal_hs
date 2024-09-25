@@ -9,9 +9,7 @@ agenciaSinConexion = [("a", "b", 1), ("b", "c", 1), ("c", "d", 1), ("d", "e", 1)
 testVueloIdaYVuelta :: Test
 testVueloIdaYVuelta =
   test
-    [ "valor verdadero" ~: pruebaIdaYVuelta agencia "a" ~?= True,
-      "valor verdadero" ~: pruebaIdaYVuelta agencia2 "a" ~?= True,
-      "valor falso" ~: pruebaIdaYVuelta agenciaSinConexion "a" ~?= False,
+    [
       "valor verdadero" ~: puedoVolverAOrigen agencia "a" ~?= True,
       "valor verdadero" ~: puedoVolverAOrigen agencia2 "a" ~?= True,
       "valor falso" ~: puedoVolverAOrigen agenciaSinConexion "a" ~?= False

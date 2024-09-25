@@ -65,62 +65,62 @@ minimaDuracion (tiempo1 : tiempo2 : tiempos)
 
 -- EJERCICIO 7
 puedoVolverAOrigen :: AgenciaDeViajes -> Ciudad -> Bool
-puedoVolverAOrigen vuelos origen = validaMasEscalas2 [conMismoOrigen vuelos origen, diferenteACiudad vuelos origen, conMismoDestino vuelos origen]
+puedoVolverAOrigen vuelos origen = validaMasEscalas [conMismoOrigen vuelos origen, diferenteACiudad vuelos origen, conMismoDestino vuelos origen]
 
 
 conMismoOrigen :: AgenciaDeViajes -> Ciudad -> AgenciaDeViajes
 conMismoOrigen [] _ = []
-conMismoOrigen ((origen, destino, t) : viajes) ciudad
-  | mismoOrigenYCiudad = (origen, destino, t) : conMismoOrigen viajes ciudad
-  | otherwise = conMismoOrigen viajes ciudad
+conMismoOrigen ((origen, destino, t) : vuelos) ciudad
+  | mismoOrigenYCiudad = (origen, destino, t) : conMismoOrigen vuelos ciudad
+  | otherwise = conMismoOrigen vuelos ciudad
   where
     mismoOrigenYCiudad = origen == ciudad
 
 conMismoDestino :: AgenciaDeViajes -> Ciudad -> AgenciaDeViajes
 conMismoDestino [] _ = []
-conMismoDestino ((origen, destino, t) : viajes) ciudad
-  | mismoDestinoYCiudad = (origen, destino, t) : conMismoDestino viajes ciudad
-  | otherwise = conMismoDestino viajes ciudad
+conMismoDestino ((origen, destino, t) : vuelos) ciudad
+  | mismoDestinoYCiudad = (origen, destino, t) : conMismoDestino vuelos ciudad
+  | otherwise = conMismoDestino vuelos ciudad
   where
     mismoDestinoYCiudad = destino == ciudad
 
 diferenteACiudad :: AgenciaDeViajes -> Ciudad -> AgenciaDeViajes
 diferenteACiudad [] _ = []
-diferenteACiudad ((origen, destino, t) : viajes) ciudad
-  | ciudadDiferente = (origen, destino, t) : diferenteACiudad viajes ciudad
-  | otherwise = diferenteACiudad viajes ciudad
+diferenteACiudad ((origen, destino, t) : vuelos) ciudad
+  | ciudadDiferente = (origen, destino, t) : diferenteACiudad vuelos ciudad
+  | otherwise = diferenteACiudad vuelos ciudad
   where
     ciudadDiferente = origen /= ciudad && destino /= ciudad
 
 diferenteA2Ciudades :: AgenciaDeViajes -> Ciudad -> Ciudad -> AgenciaDeViajes
 diferenteA2Ciudades [] _  _ = []
-diferenteA2Ciudades ((origen, destino, t) : viajes) ciudad1 ciudad2
-  | difDestinoYC1 && difOrigenYC2 = (origen, destino, t) : diferenteA2Ciudades viajes ciudad1 ciudad2
-  | otherwise = diferenteA2Ciudades viajes ciudad1 ciudad2
+diferenteA2Ciudades ((origen, destino, t) : vuelos) ciudad1 ciudad2
+  | difDestinoYC1 && difOrigenYC2 = (origen, destino, t) : diferenteA2Ciudades vuelos ciudad1 ciudad2
+  | otherwise = diferenteA2Ciudades vuelos ciudad1 ciudad2
   where
     difDestinoYC1 = destino /= ciudad1
     difOrigenYC2 = origen /= ciudad2
 
 
-validaMasEscalas2 :: [AgenciaDeViajes] -> Bool
-validaMasEscalas2 ([]:_:_: conjunto) = False
-validaMasEscalas2 (_:_:[]: conjunto) = False
-validaMasEscalas2 (((origenA , destinoA, tA) : origenIgual) : [] : ((origenB, destinoB, tB) : destinoIgual): conjunto)
+validaMasEscalas :: [AgenciaDeViajes] -> Bool
+validaMasEscalas ([]:_:_: conjunto) = False
+validaMasEscalas (_:_:[]: conjunto) = False
+validaMasEscalas (((origenA , destinoA, tA) : origenIgual) : [] : ((origenB, destinoB, tB) : destinoIgual): conjunto)
   | destinoA == origenB = True
   | otherwise = validaConSiguienteDestino || validaConSiguienteOrigen
   where
-    validaConSiguienteDestino = validaMasEscalas2 (((origenA , destinoA, tA) : origenIgual) : [] : destinoIgual: conjunto)
-    validaConSiguienteOrigen = validaMasEscalas2 (origenIgual : [] : ((origenB, destinoB, tB) : destinoIgual): conjunto)
+    validaConSiguienteDestino = validaMasEscalas (((origenA , destinoA, tA) : origenIgual) : [] : destinoIgual: conjunto)
+    validaConSiguienteOrigen = validaMasEscalas (origenIgual : [] : ((origenB, destinoB, tB) : destinoIgual): conjunto)
 
-validaMasEscalas2 (((origenA , destinoA, tA) : origenIgual) : ((origen, destino, t): diferenteTodo) : ((origenB, destinoB, tB) : destinoIgual) : conjunto) 
+validaMasEscalas (((origenA , destinoA, tA) : origenIgual) : ((origen, destino, t): diferenteTodo) : ((origenB, destinoB, tB) : destinoIgual) : conjunto) 
   | destinoA == origenB = True
   | igualAlDestino && igualAlOrigen = True
   | otherwise = validaConSiguienteDestinoDif || validaConSiguienteDestinoIgual || validaconSigueinteOrigenIgual || validaConSiguientesParecidos
   where 
     igualAlDestino = destinoA == origen
     igualAlOrigen = origenB == destino
-    validaConSiguienteDestinoDif = validaMasEscalas2 (((origenA,destinoA,tA): origenIgual) : diferenteTodo : ((origenB,destinoB,tB):destinoIgual) : conjunto)
-    validaConSiguienteDestinoIgual = validaMasEscalas2 (((origenA,destinoA,tA): origenIgual) : ((origen, destino,t):diferenteTodo) : destinoIgual : conjunto)
-    validaconSigueinteOrigenIgual = validaMasEscalas2 ( origenIgual : ((origen, destino,t): diferenteTodo) : ((origenB, destinoB, tB) : destinoIgual) : conjunto) 
-    validaConSiguientesParecidos = validaMasEscalas2 [conMismoOrigen ((origen, destino,t): diferenteTodo) destinoA, diferenteA2Ciudades ((origen, destino,t): diferenteTodo) destinoA origenB, conMismoDestino ((origen, destino,t): diferenteTodo) origenB]
+    validaConSiguienteDestinoDif = validaMasEscalas (((origenA,destinoA,tA): origenIgual) : diferenteTodo : ((origenB,destinoB,tB):destinoIgual) : conjunto)
+    validaConSiguienteDestinoIgual = validaMasEscalas (((origenA,destinoA,tA): origenIgual) : ((origen, destino,t):diferenteTodo) : destinoIgual : conjunto)
+    validaconSigueinteOrigenIgual = validaMasEscalas ( origenIgual : ((origen, destino,t): diferenteTodo) : ((origenB, destinoB, tB) : destinoIgual) : conjunto) 
+    validaConSiguientesParecidos = validaMasEscalas [conMismoOrigen ((origen, destino,t): diferenteTodo) destinoA, diferenteA2Ciudades ((origen, destino,t): diferenteTodo) destinoA origenB, conMismoDestino ((origen, destino,t): diferenteTodo) origenB]
 
