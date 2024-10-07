@@ -61,7 +61,8 @@ conUnViaje ((c1,d1,t1):xs) origen destino
     | otherwise = conUnViaje xs origen destino 
 
 conEscala :: AgenciaDeViajes -> AgenciaDeViajes -> Bool
-conEscala [] _ _ = False
+conEscala [] _ = False
+conEscala _ [] = False
 conEscala ((c1,d1,t1):xs) ((c2,d2,t2):ys) 
     | d1 == c2 = True
     | otherwise = conEscala ((c1,d1,t1):xs) ys || conEscala xs ((c2,d2,t2):ys)
@@ -76,3 +77,5 @@ duracionDelCaminoMasRapido _ _ _ = 10.0 -- Borrar y escribir el código correcto
 -- EJERCICIO 7
 puedoVolverAOrigen :: AgenciaDeViajes -> Ciudad ->  Bool
 puedoVolverAOrigen vuelos origen = True -- Borrar y escribir el código correcto
+
+

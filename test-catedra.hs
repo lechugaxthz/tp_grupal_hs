@@ -24,7 +24,7 @@ allTests = test [
 testsEjvuelosValidos = test [
     "vuelos válido con un elemento" ~: vuelosValidos [("BsAs", "Rosario", 5.0)] ~?= True
     ]
-
+-- Ejercicio 2
 testsEjciudadesConectadas = test [
     "ciudad conectada con un elemento" ~: ciudadesConectadas  [("BsAs", "Rosario", 5.0)] "Rosario" ~?= ["BsAs"],
     "Agencia de viajes tiene 1 elemento, ciudad no está" ~: expectPermutacion (ciudadesConectadas [("Buenos Aires","Cordoba",1.5)] "Rosario")  [],
@@ -43,6 +43,7 @@ testsEjciudadesConectadas = test [
     "y ciudad está más de una vez, mezcla de origen y destino, y sus destinos/origenes se repiten " ~: expectPermutacion (ciudadesConectadas [("Santa Fe", "Cordoba", 1.5),("Cordoba", "Santa Fe", 1.2),("Tucuman", "Chubut", 1.8),("Cordoba", "Jujuy", 0.5)] "Cordoba")  ["Jujuy","Santa Fe"]
     ]
 
+
 testsEjmodernizarFlota = test [
     "flota modernizada con un elemento" ~: modernizarFlota [("BsAs", "Rosario", 10.0)] ~?= [("BsAs", "Rosario", 9.0)]
     ]
@@ -53,13 +54,13 @@ testsEjciudadMasConectada = test [
 
 testsEjsePuedeLlegar = test [
     "Se puede llegar caso verdadero con una escala" ~: sePuedeLlegar [("BsAs", "Rosario", 5.0), ("Rosario", "Córdoba", 5.0), ("Córdoba", "BsAs", 8.0)] "BsAs" "Córdoba" ~?= True,
-    --"Agencia de viajes tiene 1 elemento" ~: (sePuedeLlegar [("Santa Fe","Buenos Aires",1.5)] "Chubut" "Santa Fe") ~?= False,
+    "Agencia de viajes tiene 1 elemento" ~: (sePuedeLlegar [("Santa Fe","Buenos Aires",1.5)] "Chubut" "Santa Fe") ~?= False,
     "Agencia de viajes tiene más elementos, no hay niguna ruta y ciudades aparecen" ~: (sePuedeLlegar [("Santa Fe", "Cordoba", 1.5),("Cordoba", "Santa Fe", 1.2),("Tucuman", "Chubut", 1.8),("Cordoba", "Jujuy", 0.5)] "Tucuman" "Jujuy") ~?= False,
     "No hay niguna ruta ya que las ciudades no aparecen" ~: (sePuedeLlegar [("Santa Fe", "Cordoba", 1.5),("Cordoba", "Santa Fe", 1.2),("Tucuman", "Chubut", 1.8),("Cordoba", "Jujuy", 0.5)] "Salta" "La Pampa") ~?= False,
-    --"No hay ninguna ruta, pero el camino aparece al revés" ~: (sePuedeLlegar [("Santa Fe", "Cordoba", 1.5),("Cordoba", "Buenos Aires", 1.2),("Tucuman", "Chubut", 1.8),("Cordoba", "Jujuy", 0.5)] "Jujuy" "Cordoba") ~?= False,
+    "No hay ninguna ruta, pero el camino aparece al revés" ~: (sePuedeLlegar [("Santa Fe", "Cordoba", 1.5),("Cordoba", "Buenos Aires", 1.2),("Tucuman", "Chubut", 1.8),("Cordoba", "Jujuy", 0.5)] "Jujuy" "Cordoba") ~?= False,
     "Hay una ruta directa" ~: (sePuedeLlegar [("Santa Fe", "Cordoba", 1.5),("Buenos Aires", "Santa Fe", 1.2),("Tucuman", "Chubut", 1.8),("Cordoba", "Jujuy", 0.5)] "Santa Fe" "Cordoba") ~?= True,
     "Hay una sola ruta con escala" ~: (sePuedeLlegar [("Santa Fe", "Cordoba", 1.5),("Buenos Aires", "La Pampa", 1.2),("Tucuman", "Chubut", 1.8),("Cordoba", "Jujuy", 0.5)] "Santa Fe" "Jujuy") ~?= True,
-    --"Hay forma de llegar con distintas escalas" ~: (sePuedeLlegar  [("Santa Fe", "Cordoba", 1.5),("Buenos Aires", "La Pampa", 1.2),("Tucuman", "Buenos Aires", 1.8),("Cordoba", "Jujuy", 0.5),("Cordoba", "Buenos Aires", 2.5),("Santa Fe", "Tucuman", 4.5)] "Santa Fe" "Buenos Aires") ~?= True,
+    "Hay forma de llegar con distintas escalas" ~: (sePuedeLlegar  [("Santa Fe", "Cordoba", 1.5),("Buenos Aires", "La Pampa", 1.2),("Tucuman", "Buenos Aires", 1.8),("Cordoba", "Jujuy", 0.5),("Cordoba", "Buenos Aires", 2.5),("Santa Fe", "Tucuman", 4.5)] "Santa Fe" "Buenos Aires") ~?= True,
     "Hay escala y ruta directa al mismo tiempo" ~: (sePuedeLlegar [("Santa Fe", "Cordoba", 1.5),("Buenos Aires", "La Pampa", 1.2),("Tucuman", "Buenos Aires", 1.8),("Cordoba", "Jujuy", 0.5),("Cordoba", "Buenos Aires", 2.5),("Santa Fe", "Jujuy", 4.5),("Santa Fe", "Buenos Aires", 2.5)] "Santa Fe" "Buenos Aires") ~?= True
     ]
 
@@ -70,7 +71,6 @@ testsEjduracionDelCaminoMasRapido = test [
 testsEjpuedoVolverAOrigen = test [
         "puedo volver a origen caso verdadero con una escala" ~: puedoVolverAOrigen [("BsAs", "Rosario", 5.0), ("Rosario", "Córdoba", 5.0), ("Córdoba", "BsAs", 8.0)] "BsAs" ~?= True
     ]
-
 
 
 -- Funciones extras
