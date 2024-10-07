@@ -1,4 +1,5 @@
 import Solucion
+
 import Test.HUnit
 
 -- test ejercicio 3
@@ -25,7 +26,7 @@ testModernizaFlota =
 
 -- ahorro de espacio con funciones con nombre mas chico
 funcionTest3 :: AgenciaDeViajes -> Bool
-funcionTest3 x = cadaValorEsModernizado (modernizarFlota x) (funcionPrueba x) x
+funcionTest3 x = cadaValorEsModernizado (modernizarFlota x) x
 
 -- fin
 
@@ -39,16 +40,13 @@ scnd (_, y, _) = y
 thd :: Vuelo -> Duracion
 thd (_, _, z) = z
 
-funcionPrueba :: AgenciaDeViajes -> AgenciaDeViajes
-funcionPrueba flota = [(frst (flota !! x), scnd (flota !! x), thd (flota !! x) * 0.9) | x <- [0 .. length flota - 1]]
-
-cadaValorEsModernizado :: AgenciaDeViajes -> AgenciaDeViajes -> AgenciaDeViajes -> Bool
-cadaValorEsModernizado [] [] [] = True
-cadaValorEsModernizado ((_, _, t1) : viajesFuncSol) ((_, _, t2) : viajesFuncPrueba) ((_, _, t3) : viajesOriginales)
-  | entreFuncValenIgual = cadaValorEsModernizado viajesFuncSol viajesFuncPrueba viajesOriginales
+cadaValorEsModernizado :: AgenciaDeViajes -> AgenciaDeViajes -> Bool
+cadaValorEsModernizado [] [] = True
+cadaValorEsModernizado ((_, _, t1) : viajesFuncSol) ((_, _, t3) : viajesOriginales)
+  | entreFuncValenIgual = cadaValorEsModernizado viajesFuncSol viajesOriginales
   | otherwise = False
   where
-    entreFuncValenIgual = t1 == t2 && t1 < t3 && t3 * 0.9 == t1
+    entreFuncValenIgual = t1 < t3 && t3 * 0.9 == t1
 
 -- test ejercicio 6
 
@@ -59,23 +57,35 @@ agenciaEj4 = agenciaEj3
 testDuraciónDelCaminoMasRapido :: Test
 testDuraciónDelCaminoMasRapido =
   test
-    [ "Vuelo directo -> True -> duración del vuelo" ~: funcionTest4Simple agenciaEj4 1 ~?= True,
-      "Vuelo con escala -> True -> duración de ambos vuelos" ~: funcionTest4Escala agenciaEj4 3 ~?= True
+    [ "Vuelo directo -> True -> duración del vuelo" ~: funcionTest4 True agenciaEj4 "La Pampa" "Neuquen" ~?= True,
+      "Vuelo con escala -> True -> duración de ambos vuelos" ~: funcionTest4 False agenciaEj4 "Cordoba" "Salta" ~?= True
     ]
 
 -- ahorro de espacio con funciones con nombre mas chico
-funcionTest4Simple :: AgenciaDeViajes -> Int -> Bool
-funcionTest4Simple x n = comparaValorFnPrincipalConEntrada x (frst (x !! n)) (scnd (x !! n)) (thd (x !! n))
+funcionTest4 :: Bool -> AgenciaDeViajes -> Ciudad -> Ciudad -> Bool
+funcionTest4 simple viajes origen destino 
+  | simple = duracionDelCaminoMasRapido viajes origen destino == vueloDirecto viajes origen destino
+  | otherwise = duracionDelCaminoMasRapido viajes origen destino == minimaDuracion listaDeTiemposEnEscala
+    where
+      conOrigenIgual = conMismoOrigen viajes origen
+      conDestinoIgual = conMismoDestino viajes destino
+      listaDeTiemposEnEscala = vueloConEscala conOrigenIgual conDestinoIgual
 
-funcionTest4Escala :: AgenciaDeViajes -> Int -> Bool
-funcionTest4Escala x n = comparaValorFnPrincipalConEntrada agenciaEj4 (frst (agenciaEj4 !! n)) (scnd (agenciaEj4 !! (n + 1))) (thd (agenciaEj4 !! n) + thd (agenciaEj4 !! (n + 1)))
 
-comparaValorFnPrincipalConEntrada :: AgenciaDeViajes -> Ciudad -> Ciudad -> Duracion -> Bool
-comparaValorFnPrincipalConEntrada viajes cdOrigen cdDestino duracionEsperada
-  | valorDeFn == duracionEsperada = True
-  | otherwise = False
-  where
-    valorDeFn = duracionDelCaminoMasRapido viajes cdOrigen cdDestino
+vueloDirecto :: AgenciaDeViajes -> Ciudad -> Ciudad -> Duracion
+vueloDirecto ((origen, destino, t): vuelos) cdOrigen cdDestino
+  | origen == cdOrigen && destino == cdDestino = t
+  | otherwise = vueloDirecto vuelos cdOrigen cdDestino
+
+vueloConEscala :: AgenciaDeViajes -> AgenciaDeViajes -> [Duracion]
+vueloConEscala [] _ = []
+vueloConEscala _ [] = []
+vueloConEscala ((origen1, destino1, t1):viajes1) ((origen2, destino2, t2):viajes2)
+  | destinoYOrigen = t1 + t2 : vueloConEscala viajes1 viajes2
+  | otherwise = vueloConEscala viajes1 ((origen2, destino2, t2):viajes2) ++ vueloConEscala ((origen1, destino1,t1): viajes1) viajes2
+  where 
+    destinoYOrigen = destino1 == origen2
+
 
 -- test ejercicio 7
 agencia :: AgenciaDeViajes
@@ -111,7 +121,7 @@ allTest =
 runTest :: IO Counts
 runTest = runTestTT allTest
 
-
+{-
 vueloConUnaOMasEscalas :: AgenciaDeViajes -> AgenciaDeViajes -> Ciudad -> Ciudad -> AgenciaDeViajes
 vueloConUnaOMasEscalas [] _ _ = []
 vueloConUnaOMasEscalas (vuelo : vuelos) vuelosDif ciudadOrigen ciudadDestino
@@ -119,3 +129,4 @@ vueloConUnaOMasEscalas (vuelo : vuelos) vuelosDif ciudadOrigen ciudadDestino
   where
     esMismoVuelo = frst vuelo == ciudadOrigen && scnd vuelo == ciudadDestino
     vueloADestino = validaMasEscalas [[vuelo], vuelosDif, ]
+    -}
