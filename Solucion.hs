@@ -19,8 +19,12 @@ Lo primero que vamos a explicar es la función vueloValido.
 vuelosValidos tiene dos casos base: Si la lista está vacia o si tiene un elemento. 
 1) si la lista está vacía, tira False
 2) Si la lista tiene un elemento, comprueba VueloValido en ese elemento, y tira True o False. 
-Si tiene mas de un elemento, 
-
+Si tiene mas de un elemento, lo piensa así.
+1) Los dos primeros vuelos deben ser válidos
+2) El origen 1 debe ser distinto del origen 2, lo mismo para los destinos. 
+3) La recursión es realizada dos veces: Una vez sobre la lista quitandole el elemento 2, y otra vez sobre la lista quitandole el elemento 1.
+3b) Esto se va a ir repitiendo hasta que quede un elemento, en donde pasa vueloValido sobre este elemento, y decide si True o False 
+4) Esto me va a dar una cadena de booleanos, en donde la única manera de que funcione bien esto es que todos sean verdaderos ;)
 -}
 vuelosValidos :: AgenciaDeViajes -> Bool 
 vuelosValidos [] = False
@@ -39,31 +43,7 @@ vueloValido (c, d, t) = c /= d && t > 0
 -- EJERCICIO 2
 ciudadesConectadas :: AgenciaDeViajes -> Ciudad -> [Ciudad]
 ciudadesConectadas [] _ = [] -- Caso base 
-ciudadesConectadas [(c1,d1,t1)] ciudad  -- Caso donde en AgenciaDeViajes solo hay 1 elemento
-    | ciudad == c1 = [d1]  -- Si la ciudad es la de origen me da el destino
-    | ciudad == d1 = [c1]  -- Si la ciudad es la de destino me da la de origen
-    | otherwise = [] -- Si la ciudad no está conectada no devuelve ninguna 
-ciudadesConectadas ((c1,d1,t1): vuelos) ciudad -- Caso donde AgenciaDeViajes tiene más de 1 elemento
-    | ciudad == c1 = sacarCiudadesRepetidas([d1] ++ ciudadesConectadas vuelos ciudad)
-    | ciudad == d1 = sacarCiudadesRepetidas([c1] ++ ciudadesConectadas vuelos ciudad)
-    | otherwise = ciudadesConectadas vuelos ciudad 
 
-sacarCiudadesRepetidas :: [Ciudad] -> [Ciudad]
-sacarCiudadesRepetidas [] = []
-sacarCiudadesRepetidas [x] = [x]
-sacarCiudadesRepetidas (x:xs)
-    | not (pertenece1 x xs) = [x] ++ sacarCiudadesRepetidas xs
-    | otherwise = x : (sacarCiudadesRepetidas (sacarCiudadEspecifica x xs)) 
-
-pertenece1 :: Ciudad -> [Ciudad] -> Bool
-pertenece1 _ [] = False
-pertenece1 x (y:ys) = x == y || pertenece1 x ys
-
-sacarCiudadEspecifica :: Ciudad -> [Ciudad] -> [Ciudad]
-sacarCiudadEspecifica _ [] = []
-sacarCiudadEspecifica x (y:ys)
-    | x == y = sacarCiudadEspecifica x ys
-    | otherwise = y : (sacarCiudadEspecifica x ys)
 
 -- EJERCICIO 3
 modernizarFlota :: AgenciaDeViajes -> AgenciaDeViajes
