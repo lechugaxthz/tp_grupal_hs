@@ -1,4 +1,4 @@
-import System.Win32 (xBUTTON1)
+module Solucion where
 
 type Ciudad = String
 type Duracion = Float
@@ -12,9 +12,19 @@ type AgenciaDeViajes = [Vuelo]
     t(1,2, ... , n) =  Duración del vuelo
 -}
 
+{-
+Explico como funciona el ejercicio 1:
+Lo primero que vamos a explicar es la función vueloValido. 
+.Esta función nos permite saber si este vuelo tiene origen y destino distinto, y si el tiempo de vuelo es mayor a 0. Si se cumple, tira True. Si no, tira False
+vuelosValidos tiene dos casos base: Si la lista está vacia o si tiene un elemento. 
+1) si la lista está vacía, tira False
+2) Si la lista tiene un elemento, comprueba VueloValido en ese elemento, y tira True o False. 
+Si tiene mas de un elemento, 
+
+-}
 vuelosValidos :: AgenciaDeViajes -> Bool 
 vuelosValidos [] = False
-vuelosValidos [x] = True
+vuelosValidos [x] = vueloValido x 
 vuelosValidos ((c1,d1,t1):(c2,d2,t2):xs) = vueloValido1 && vueloValido2 && (c1 /= c2 || d1 /= d2) && vuelosValidos ((c1,d1,t1) : xs) && vuelosValidos ((c2,d2,t2) : xs)
     where
         vueloValido1 = vueloValido (c1,d1,t1)
@@ -89,6 +99,10 @@ cantidadDeApariciones :: String -> [String] -> Integer
 cantidadDeApariciones ciudad [] = 0
 cantidadDeApariciones ciudad (x:xs) | ciudad == x = 1 + cantidadDeApariciones ciudad xs
                                     | otherwise = cantidadDeApariciones ciudad xs
+
+--cantidadDeApariciones, pero metiendole directamente AgenciaDeViajes (sirve para otros ejercicios)
+cantidadDeAparicionesTuplas :: String -> AgenciaDeViajes -> Integer
+cantidadDeAparicionesTuplas ciudad agencia = cantidadDeApariciones ciudad (conversorString agencia)
 
 --Va quitando los elementos que queramos de la lista
 quitarElementos :: String -> [String] -> [String]

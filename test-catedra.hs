@@ -8,6 +8,7 @@ runCatedraTests = runTestTT allTests
 
 allTests = test [
     "vuelosValidos" ~: testsEjvuelosValidos,
+    "vueloValido" ~: testsEjvueloValido,
     "ciudadesConectadas" ~: testsEjciudadesConectadas,
     "modernizarFlota" ~: testsEjmodernizarFlota,
     "ciudadMasConectada" ~: testsEjciudadMasConectada,
@@ -19,7 +20,37 @@ allTests = test [
 -- corregir los tests si es necesario con las funciones extras que se encuentran al final del archivo
 
 testsEjvuelosValidos = test [
-    "vuelos válido con un elemento" ~: vuelosValidos [("BsAs", "Rosario", 5.0)] ~?= True
+    "vuelos válidos con 1 elemento" ~: vuelosValidos [("BsAs", "Rosario", 5.0)] ~?= True,
+    "vuelos no válidos con 1 elemento, tiempo de vuelo 0" ~: vuelosValidos [("BsAs","Rosario",0)] ~?= False,
+    "vuelos no válidos con 1 elemento, ciudades repetidas" ~: vuelosValidos [("Rosario","Rosario",5)] ~?= False,
+    "vuelos válidos con 2 elementos distintos" ~: vuelosValidos [("Rosario","Cordoba",4),("Tucuman","Cordoba",3)] ~?= True,
+    "vuelos válidoss con 2 elementos, mismo viaje ida y vuelta" ~: vuelosValidos [("BsAs","Cordoba",4),("Cordoba","Rosario",4)] ~?= True,
+    "vuelos no válidos con 2 elementos, mismo viaje repetido" ~: vuelosValidos [("BsAs","Tucuman",5),("BsAs","Tucuman",5)] ~?= False,
+    "vuelos no válidos con 2 elementos, mismo viaje con distinto tiempo" ~: vuelosValidos [("Tucuman","Salta",2),("Tucuman","Salta",3)] ~?= False,
+    "vuelos válidos con 3 elementos,elementos distintos" ~: vuelosValidos [("BsAs","Tucuman",5),("Jujuy","BsAs",4),("Salta","Resistencia",3)] ~?= True,
+    "vuelos válidos con 3 elementos, dos ida y vuelta y un distinto" ~: vuelosValidos [("Tucuman","BsAs",4),("BsAs","Tucuman",4),("Montevideo","Rosario",3)] ~?= True,
+    "vuelos válidos con 3 elementos, dos ida y vuelta y un distinto CASO DOS" ~: vuelosValidos [("Rosario","Damasco",4),("Montevideo","Rosario",3),("Damasco","Rosario",4)] ~?= True,
+    "vuelos no válidos con 3 elementos, todos iguales" ~: vuelosValidos [("Rosario","Tucuman",4),("Rosario","Tucuman",4),("Rosario","Tucuman",4)] ~?= False,
+    "vuelos no válidos con 3 elementos, dos iguales y uno distinto"~: vuelosValidos [("Rosario","Tucuman",1),("Tucuman","Cordoba",2),("Rosario","Tucuman",1)] ~?= False,
+    "vuelos no válidos con 3 elementos, dos iguales con distinto tiempo" ~: vuelosValidos [("Montevideo","BsAs",4),("Montevideo","BsAs",5),("Rosario","Santa Fe",1)] ~?= False,
+    "vuelos no válidos con 3 elementos, uno con tiempo de vuelo 0" ~:vuelosValidos [("Montevideo","BsAs",1),("Tucuman","Posadas",2),("Tucuman","Salta",0)] ~?= False,
+    "vuelos no válidos con 3 elementos, todos con tiempo de vuelo 0" ~:vuelosValidos [("Nueva York","Rosario",0),("Tokyo","Formosa",0),("Pekin","Ushuaia",0)] ~?= False,
+    "vuelos no válidos con 3 elementos, dos con tiempo de vuelo 0" ~: vuelosValidos [("Rosario","Damasco",1),("Tucuman","Cordoba",0),("Damasco","Tucuman",0)] ~?= False,
+    "vuelos no válidos con 3 elementos, dos con tiempo de vuelo 0 CASO DOS" ~: vuelosValidos [("Rosario","Damascco",0),("Tokyo","Formosa",4),("Berlin","Rawson",0)] ~?= False,
+    "vuelos válidos con 4 elementos, todos distintos" ~: vuelosValidos [("Tucuman","La Plata",3),("Rosario","Tokyo",4),("Tokyo","Nueva York",2),("Helsinki","Barcelona",2)] ~?= True,
+    "vuelos válidos con 4 elementos, dos idas y dos vueltas" ~: vuelosValidos [("Tucuman","Helsinki",2),("Rosario","Rawson",3),("Helsinki","Tucuman",2),("Rawson","Rosario",3)] ~?= True,
+    "vuelos válidos con 4 elementos, dos idas y dos vueltas CASO DOS" ~: vuelosValidos [("Helsinki","Teheran",2),("Rawson","Tucuman",4),("Tucuman","Rawson",4),("Teheran","Helsinki",2)] ~?= True,
+    "vuelos válidos con 4 elementos, dos idas y dos vueltas CASO TRES" ~: vuelosValidos [("Helsinki","Tucuman",2),("Tucuman","Helsinki",2),("Rosario","Catamarca",3),("Catamarca","Rosario",3)] ~?= True
+    ] 
+
+testsEjvueloValido :: Test
+testsEjvueloValido = test [
+    "Tupla con dos ciudades distintas y t>0" ~: vueloValido ("Rosario","Cordoba",3) ~?= True,
+    "Tupla con dos ciudades iguales y t>0" ~: vueloValido ("Rosario","Rosario",2) ~?= False,
+    "Tupla con dos ciudades distintas y t < 0" ~: vueloValido ("Tucuman","Rosario",0) ~?= False,
+    "Tupla con dos ciudades distintas y t < 0 CASO DOS" ~: vueloValido ("Rosario","Cordoba",(-2)) ~?= False,
+    "Tupla con dos ciudades iguales y t < 0" ~: vueloValido ("Rosario","Rosario",0) ~?= False,
+    "Tupla con dos ciudades iguales y t < 0 CASO DOS" ~: vueloValido ("Rosario","Rosario",(-4)) ~?= False 
     ]
 
 testsEjciudadesConectadas = test [
