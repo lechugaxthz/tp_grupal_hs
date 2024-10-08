@@ -122,10 +122,6 @@ cantidadDeApariciones ciudad [] = 0
 cantidadDeApariciones ciudad (x:xs) | ciudad == x = 1 + cantidadDeApariciones ciudad xs
                                     | otherwise = cantidadDeApariciones ciudad xs
 
---cantidadDeApariciones, pero metiendole directamente AgenciaDeViajes (sirve para otros ejercicios)
-cantidadDeAparicionesTuplas :: String -> AgenciaDeViajes -> Integer
-cantidadDeAparicionesTuplas ciudad agencia = cantidadDeApariciones ciudad (conversorString agencia)
-
 --Va quitando los elementos que queramos de la lista
 quitarElementos :: String -> [String] -> [String]
 quitarElementos nombre [] = []
