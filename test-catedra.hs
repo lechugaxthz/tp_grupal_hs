@@ -1,6 +1,7 @@
 import Test.HUnit
 import Data.List
 import Solucion
+import Solucion (ciudadMasConectada)
 -- No está permitido agregar nuevos imports.
 
 
@@ -64,7 +65,16 @@ testsEjmodernizarFlota = test [
     ]
 
 testsEjciudadMasConectada = test [
-    "ciudad Mas conectada que aparece dos veces" ~: ciudadMasConectada [("BsAs", "Rosario", 10.0), ("Rosario", "Córdoba", 7.0)] ~?= "Rosario"
+    "ciudadMasConectada, lista de una tupla" ~: expectAny (ciudadMasConectada [("BsAs","Rosario",5.0)]) ["BsAs","Rosario"],
+    "ciudadMasConectada, lista de dos tuplas con una ciudad con mayor cantidad de vuelos" ~: ciudadMasConectada [("BsAs", "Rosario", 10.0), ("Rosario", "Córdoba", 7.0)] ~?= "Rosario",
+    "ciudadMasConectada, lista de dos tuplas con dos ciudades con la misma cantidad de vuelos"  ~: expectAny (ciudadMasConectada [("Cordoba","Tucuman",5.0),("Tucuman","Cordoba",5.0)]) ["Cordoba","Tucuman"],
+    "ciudadMasConectada, lista de tres tuplas, con una ciudad con mas vuelos que las otras"  ~: ciudadMasConectada [("BsAs","Tucuman",5.0),("Tucuman","Jujuy",6.0),("Tucuman","Asuncion",3.0)] ~?= "Tucuman",
+    "ciudadMasConectada, lista de tres tuplas, dos ciudades con mas cantidad de vuelos" ~: expectAny (ciudadMasConectada [("Madrid","Barcelona",2),("Barcelona","Roma",4),("Paris","Roma",3)]) ["Barcelona","Roma"],
+    "ciudadMasConectada, lista de tres tuplas, dos ciudades con mas cantidad de vuelos" ~: expectAny (ciudadMasConectada [("Madrid","Barcelona",2),("Barcelona","Roma",4),("Madrid","Roma",3)]) ["Madrid","Barcelona","Roma"],
+    "ciudadMasConectada, lista de cuatro tuplas, una ciudad con mas vuelos que las otras" ~: ciudadMasConectada [("Paris","Barcelona",4),("Roma","BsAs",3),("BsAs","Mexico",4),("BsAs","Barcelona",2)] ~?= "BsAs",
+    "ciudadMasConectada, lista de cuatro tuplas, dos ciudades con mas vuelos que las otras" ~: expectAny (ciudadMasConectada [("Madrid","Barcelona",2),("Barcelona","Roma",4),("Paris","Roma",3),("Roma","Barcelona",4)]) ["Barcelona","Roma"],
+    "ciudadMasConectada, lista de cuatro tuplas, todas las ciudades con el mismo num de vuelos"  ~: expectAny (ciudadMasConectada[("Tucuman","Cordoba",4),("BsAs","Rosario",3),("Paris","Barcelona",2),("Jujuy","Salta",3)]) ["Tucuman","Cordoba","BsAs","Rosario","Paris","Barcelona","Jujuy","Salta"],
+    "ciudadMasConectada, lista de cuatro tuplas, lista de vuelos capicua (?)"  ~: ciudadMasConectada[("Madrid","Barcelona",2),("Barcelona","Roma",4),("Roma","Barcelona",3),("Barcelona","Madrid",4)] ~?= "Barcelona"
     ]
 
 testsEjsePuedeLlegar = test [
