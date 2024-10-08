@@ -1,5 +1,19 @@
 module Solucion where
 
+{-
+  Integrantes:
+    - Gonzalo Escobar
+        - DNI: 45542437
+        - correo: gonzaloescobar121@gmail.com
+    - Delfina Boyadjian 
+        - DNI: 46291307
+        - correo: delfiboya@gmail.com
+    - Lautaro Garcia
+        - DNI: 42831290
+        - correo: lautarogonzalogarcia@outlook.com
+-}
+
+
 type Ciudad = String
 
 type Duracion = Float
