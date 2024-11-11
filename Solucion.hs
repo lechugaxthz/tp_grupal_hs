@@ -43,7 +43,7 @@ Si tiene mas de un elemento, lo piensa así.
 4) Esto me va a dar una cadena de booleanos, en donde la única manera de que funcione bien esto es que todos sean verdaderos ;)
 -}
 vuelosValidos :: AgenciaDeViajes -> Bool 
-vuelosValidos [] = False
+vuelosValidos [] = True
 vuelosValidos [x] = vueloValido x 
 vuelosValidos ((c1,d1,t1):(c2,d2,t2):xs) = vueloValido1 && vueloValido2 && (c1 /= c2 || d1 /= d2) && vuelosValidos ((c1,d1,t1) : xs) && vuelosValidos ((c2,d2,t2) : xs)
     where
@@ -86,6 +86,11 @@ sacarCiudadEspecifica x (y:ys)
     | otherwise = y : (sacarCiudadEspecifica x ys)
 
 -- EJERCICIO 3
+{- 
+  por cada viaje de Agencia de viajes, multiplicamos el tiempo del viaje por 0.9
+  obteniendo el 90% del tiempo de viaje con respecto al original.
+  
+-}
 modernizarFlota :: AgenciaDeViajes -> AgenciaDeViajes
 modernizarFlota [] = []
 modernizarFlota ((origen, destino, tiempo) : vuelos) = (origen, destino, tiempoActualizado) : modernizarFlota vuelos
@@ -204,6 +209,15 @@ puedoVolverAOrigen vuelos origen = validaMasEscalas [vuelosConMismoOrigen, vuelo
     vuelosConMismoDestino = conMismoDestino vuelos origen
     vuelosDiferentes = diferenteACiudad vuelos origen
 
+{-
+  ATT: PARA ESTAS EXPLICACIONES UTILIZO LA EXPRESION "DIFERENTE" COMO "!="
+-}
+
+{-
+  toma los vuelos con el mismo origen que la ciudad que recibe
+  es decir
+    para para todo ((x,y,t):[]) c devolverá [(x1,y1,t1),...,(xn,yn,tn)]  <=> x == c 
+-}
 conMismoOrigen :: AgenciaDeViajes -> Ciudad -> AgenciaDeViajes
 conMismoOrigen [] _ = []
 conMismoOrigen ((origen, destino, t) : vuelos) ciudad
@@ -212,6 +226,11 @@ conMismoOrigen ((origen, destino, t) : vuelos) ciudad
   where
     mismoOrigenYCiudad = origen == ciudad
 
+{-
+  toma los vuelos con el mismo destino que la ciudad que recibe
+  es decir
+    para para todo ((x,y,t):[]) c devolverá [(x1,y1,t1),...,(xn,yn,tn)]  <=> y == c 
+-}
 conMismoDestino :: AgenciaDeViajes -> Ciudad -> AgenciaDeViajes
 conMismoDestino [] _ = []
 conMismoDestino ((origen, destino, t) : vuelos) ciudad
@@ -220,6 +239,11 @@ conMismoDestino ((origen, destino, t) : vuelos) ciudad
   where
     mismoDestinoYCiudad = destino == ciudad
 
+{-
+  toma solo los vuelos con diferente origen y destino a la ciudad que recibe
+  es decir
+    para todo ((x,y,t):[]) c devolverá [(x1,y1,t1),...,(xn,yn,tn)]  <=> x != c && y != c 
+-}
 diferenteACiudad :: AgenciaDeViajes -> Ciudad -> AgenciaDeViajes
 diferenteACiudad [] _ = []
 diferenteACiudad ((origen, destino, t) : vuelos) ciudad
@@ -228,6 +252,17 @@ diferenteACiudad ((origen, destino, t) : vuelos) ciudad
   where
     ciudadDiferente = origen /= ciudad && destino /= ciudad
 
+{-
+  toma los vuelos con origen diferente a la ciudad 2 y con el destino diferente a la ciudad 1
+    razon: 
+      los vuelos que va a tomar la funcion "validaMasEscalas" en los siguientes llamados recursivos
+      van a ser aquellos que sean diferentes a los que tenemos en las otras 2 listas "origenIgual" "destinoIgual"
+      ya que no queremos vuelos que "vayan" nuevamente al lugar de "destino/origen" respectivamente
+      ahorrando así trabajo de procesamiento
+  
+  otra explicación
+    para para todo ((x,y,t):[]) c1 c2 devolverá [(x1,y1,t1),...,(xn,yn,tn)]  <=> y != c1 && x != c2
+-}
 diferenteA2Ciudades :: AgenciaDeViajes -> Ciudad -> Ciudad -> AgenciaDeViajes
 diferenteA2Ciudades [] _ _ = []
 diferenteA2Ciudades ((origen, destino, t) : vuelos) ciudad1 ciudad2
@@ -237,9 +272,51 @@ diferenteA2Ciudades ((origen, destino, t) : vuelos) ciudad1 ciudad2
     difDestinoYC1 = destino /= ciudad1
     difOrigenYC2 = origen /= ciudad2
 
+{-
+  los "vuelos" de agencia de viajes ahora los tenemos acomodados de la siguiente manera:
+    - primer llamado ! : 
+      [<vuelos de igual origen>, <vuelos diferentes al origen>, <vuelos con igual destino>]
+        cabe aclarar que 
+          - cuando referimos a igual origen y destino nos referimos a aquellos 
+        vuelos que tienen el mismo origen // destino a la ciudad referida
+          - en cuanto al llamado diferente al origen, son aquellos que tienen ciudad como destino
+          diferentes a la ciudad definida 
+    - siguientes llamados ! :
+      [
+        <vuelos con igual origen al destino *>, 
+        <vuelos diferentes al origen y destino *>, 
+        <vuelos con igual destino al origen *>
+      ]
+        aclaraciones !!! :
+          - <vuelos con igual origen al destino *> :
+            tomano el destino del primer viaje que aparece originalmente como "vuelo de igual origen"
+            se busca los vuelos de "vuelos diferentes al origen" (inicialmente, porque dejan de ser asi en los
+            siguientes llamados) a aquellos vuelos que presenten el origen igual al destino referente a "vuelo de igual origen"
+            
+            [(o1,d1,t1)... (on,dn,tn)] -> (_,d,_) = [(o1,d1,t1)... (om,dm,tm)] <=> d == oi / i pertenece a alguna posición de la lista
+          
+          - <vuelos diferentes al origen y destino *> :
+            como se explicia en la funcion "diferenteA2Ciudades", tomamos la misma lista "vuelos diferentes al origen y destino" (inicialmente llamada así) 
+            y 2 ciudades, las cuales van a corresponder a :
+              - ciudad1 = destino de "vuelo con igual origen"
+              - ciudad2 = origen de "vuelo con igual destino"
+            
+            tomando de
+              [(o1,d1,t1)... (on,dn,tn)] -> (_,Da,_) y (Ob,_,_) tal que ciudad1 == Da && Ob == ciudad2 
+                = [(o1,d1,t1)... (om,dm,tm)] <=> di != ciudad1 && oi != ciudad2 / i pertenece a alguna posición de la lista
+
+          - <vuelos con igual destino al origen *> :
+            tomando el origen del primer viaje que aparece originalmente como "vuelo de igual destino"
+            se busca aquellos vuelos pertenecientes a "vuelos diferentes al oigen" (inicialmente así) 
+            que presenten el destino igual al origen referente a "vuelo de igual destino"
+
+            [(o1,d1,t1)... (on,dn,tn)] -> (o,_,_) = [(o1,d1,t1)... (om,dm,tm)] <=> o == di / i pertenece a alguna posición de la lista
+
+-}
 validaMasEscalas :: [AgenciaDeViajes] -> Bool
 validaMasEscalas ([] : _ : _ : conjunto) = False
 validaMasEscalas (_ : _ : [] : conjunto) = False
+--  igualOrigen 
 validaMasEscalas (((origenA, destinoA, tA) : origenIgual) : [] : ((origenB, destinoB, tB) : destinoIgual) : conjunto)
   | destinoA == origenB = True
   | otherwise = validaConSiguienteDestino || validaConSiguienteOrigen
@@ -267,3 +344,90 @@ validaMasEscalas (((origenA, destinoA, tA) : origenIgual) : ((origen, destino, t
     -}
     -- con esta validación, me aseguro de no recorrer de más para hacer un ida y vuelta al mismo lugar de donde salgo
     validaConSiguientesParecidos = validaMasEscalas [conMismoOrigen ((origen, destino, t) : diferenteTodo) destinoA, diferenteA2Ciudades ((origen, destino, t) : diferenteTodo) destinoA origenB, conMismoDestino ((origen, destino, t) : diferenteTodo) origenB]
+
+{-
+  OTRA EXPLICACIÓN MAS GRAFICA DE SU FUNCIONAMIENTO !!!
+
+    partiendo de que queremos ir y volver desde un origen "A" :
+
+    vuelosDisponibles = 
+      [
+        (a,b,_),(a,c,_),(a,d,_),
+        (g,l,_),(g,a,_),(g,f,_),
+        (d,g,_),(c,f,_),(h,j,_)
+      ]
+    
+    hay vuelos redundantes como "(h,j), (g,l)" etc
+    el primer llamado de la funcion "valida mas escalas" recibe:
+    (recordar que lo que recibe es lo que devuelven las funciones que "formatean" nuestros datos iniciales)
+
+      [
+        [(a,b,_),(a,c,_),(a,d,_)], 
+        [(g,l,_),(g,f,_),(d,g,_),(c,f,_),(h,j,_)], 
+        [(g,a,_)]
+      ]
+
+      viendolo de otro modo...:
+      
+      *de origen  *diferentes  *de destino
+        (a,b,_)   | (g,l,_)   | (g,a,_)
+        (a,c,_)   | (g,f,_)   |
+        (a,d,_)   | (d,g,_)   |
+                  | (c,f,_)   |
+                  | (h,j,_)   |
+        
+      haciendo el primer llamo buscando una coincidencia entre entre "b" del primero de origen y "g" del primero de destino
+      no consigue ir, por tanto, busca dentro de los diferentes a ver si existe alguno que vaga de b -> (b,g,_) -> g
+
+      al no encontrar, ya que no existe, buscamos vuelos de la siguiente manera:
+      
+      en *de origen queremos poner vuelos de *diferentes que tengan origen "b"
+      en *de destino queremos poner vuelos de *diferentes que tengan destino "g"
+      y en *diferentes queremos vuelos de *diferentes que tengan diferente destino de "b" y diferente origen de "g"
+
+      quedando... :
+
+      *de origen  *diferentes  *de destino
+      ____________| (c,f,_)   | (d,g,_)
+                  | (h,j,_)   |
+
+      al no existir algun vuelo de origen es un falso y pasa al sigueinte
+
+      *de origen  *diferentes  *de destino
+        (a,c,_)   | (g,l,_)   | (g,a,_)
+        (a,d,_)   | (g,f,_)   |
+                  | (d,g,_)   |
+                  | (c,f,_)   |
+                  | (h,j,_)   |
+
+      con (a,c,_) del "de origen" ocurre lo mismo, solo que tras otras ejecuciones
+
+      *de origen  *diferentes  *de destino
+        (c,f,_)   | (g,l,_)   | (d,g,_)
+                  | (g,f,_)   |
+                  | (h,j,_)   |
+
+      no encuentra dentro de "diferentes" una ruta posible, ni tampoco
+      puede hacer ruta con escalas adicionales, quedando...
+
+      *de origen  *diferentes  *de destino
+        _________ | (g,l,_)   | _________
+                  | (g,f,_)   |
+                  | (h,j,_)   |
+
+      tomando el siguiente "de origen"
+
+      *de origen  *diferentes  *de destino
+        (a,d,_)   | (g,l,_)   | (g,a,_)
+                  | (g,f,_)   |
+                  | (d,g,_)   |
+                  | (c,f,_)   |
+                  | (h,j,_)   |
+
+      en este es posible encontrar una ruta con escalas entre "diferentes"    
+
+                    (a,d,_) -> (d,g,_) -> (g,a,_)
+                    porque a -> d -> g -> a por tanto True
+
+      finaliza la ejecucion
+-}
